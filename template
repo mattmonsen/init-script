@@ -1,0 +1,77 @@
+#!/bin/bash
+#
+# Init file for hypnotoad script using Mojolicious
+#
+# chkconfig: 2345 55 25
+# description: <Descripton of app>
+#
+# processname: gator_chat
+# pidfile: /var/run/app.pid
+
+# Source function library
+if [ -f /etc/init.d/functions ] ; then
+    . /etc/init.d/functions
+elif [ -f /etc/rc.d/init.d/functions ] ; then
+    . /etc/rc.d/init.d/functions
+else
+    exit 1
+fi
+
+unset TMPDIR
+RETVAL=0
+
+HYPNOTOAD=/usr/local/bin/hypnotoad
+APPLICATION="script_name"
+APPLICATION_PATH="/var/www/path/to/mojolicious/$APPLICATION"
+export MOJO_MODE=production
+
+start()
+{
+    echo -n $"Starting $APPLICATION service: "
+    $HYPNOTOAD $APPLICATION_PATH
+    RETVAL=$?
+    echo
+        [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$APPLICATION || RETVAL=1
+    return $RETVAL
+}
+
+stop()
+{
+    echo -n $"Shutting down $APPLICATION service: "
+    $HYPNOTOAD -s $APPLICATION_PATH
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$APPLICATION
+    echo
+    return $RETVAL
+}
+
+reload()
+{
+    echo -n $"Reloading $APPLICATION service: "
+    $HYPNOTOAD $APPLICATION_PATH
+    RETVAL=$?
+    echo
+    return $RETVAL
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    reload)
+        reload
+        ;;
+    restart)
+    reload
+        ;;
+    status)
+        status $APPLICATION
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|reload|restart|status}"
+        exit 2
+esac
+exit $?
