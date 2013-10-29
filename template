@@ -5,7 +5,7 @@
 # chkconfig: 2345 55 25
 # description: <Descripton of app>
 #
-# processname: gator_chat
+# processname: script_name
 # pidfile: /var/run/app.pid
 
 # Source function library
